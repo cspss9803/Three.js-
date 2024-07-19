@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh_TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> * { margin: 0; } </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../../node_modules/three/build/three.module.min.js",
+                "three/addons/": "../../node_modules/three/examples/jsm/"
+            }
+        }
+    </script>
+    <title>Three.js</title>
+</head>
+<body>
+</body>
+<script type="module">
+
+import * as THREE from 'three';                                           // 導入 Three.js 的核心模組
+let lon = 0, lat = 0, phi = 0, theta = 0;                                 // 經度、緯度、緯度弧度、經度弧度
+const scene = new THREE.Scene();                                          // 創建場景
+const renderer = new THREE.WebGLRenderer();                               // 創建渲染器
+const camera = new THREE.PerspectiveCamera();                             // 創建透視相機
+const textureLoader = new THREE.TextureLoader();                          // 創建紋理載入器
+
+textureLoader.load('Equirectangular.jpg', texture => {                    // 等紋理載入完成之後
+    init( texture );                                                      // 初始化
+    animate();                                                            // 開始旋轉
+})
+
+function init( texture ) {       
+    renderer.setSize( window.innerWidth, window.innerHeight );            // 設定渲染結果的大小
+    document.body.appendChild( renderer.domElement );                     // 把渲染畫布放到 <body> 裡面
+    
+    camera.fov = 75;                                                      // 視角 fov( Field of View )
+    camera.aspect = window.innerWidth / window.innerHeight;               // 長寬比例 aspect 
+    camera.near = 0.1;                                                    // 近裁減面的距離
+    camera.far = 1000;                                                    // 遠裁減面的距離
+    camera.updateProjectionMatrix();                                      // 更新投影矩陣
+
+    const webGLCubeRenderTarget = new THREE.WebGLCubeRenderTarget( 1024 ) // 創建 1024 大小的方塊渲染目標 ( 用於創建立方體貼圖的渲染目標 )
+    webGLCubeRenderTarget.fromEquirectangularTexture( renderer, texture ) // 將 Equirectangular (等距柱狀紋理) 轉換成立方體紋理
+    scene.background = webGLCubeRenderTarget.texture                      // 將轉換好的紋理貼到場景的背景上
+}
+
+function animate() {                                                      // 持續渲染
+    requestAnimationFrame( animate );                                     // 每幀執行一次此函數
+    lon += 0.15;                                                          // 每幀經度增加 0.15 度
+    lat = Math.max( -85, Math.min( 85, lat ) );                           // 緯度，保持它在 -85 ~ 85 之間，可以避免失真
+    phi = THREE.MathUtils.degToRad( 90 - lat );                           // 緯度弧度，將從正北(90度)開始
+    theta = THREE.MathUtils.degToRad( lon );                              // 經度弧度
+    camera.position.x = 100 * Math.sin( phi ) * Math.cos( theta );        // 球面座標系公式計算相機的 x 軸位置
+    camera.position.y = 100 * Math.cos( phi );                            // 球面座標系公式計算相機的 y 軸位置
+    camera.position.z = 100 * Math.sin( phi ) * Math.sin( theta );        // 球面座標系公式計算相機的 z 軸位置
+    camera.lookAt( scene.position );                                      // 不管相機如何旋轉，始終都看向場景中心
+    renderer.render( scene, camera );                                     // 進行一次渲染
+}
+
+</script>
+</html>

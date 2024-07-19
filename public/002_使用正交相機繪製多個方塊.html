@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh_TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> * { margin: 0; } </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../../node_modules/three/build/three.module.min.js",
+                "three/addons/": "../../node_modules/three/examples/jsm/"
+            }
+        }
+    </script>
+    <title>Three.js</title>
+</head>
+<body>
+</body>
+<script type="module">
+
+import * as THREE from 'three';                                                     // 導入 Three.js 的核心模組
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();                                                    // 創建場景
+
+const renderer = new THREE.WebGLRenderer();                                         // 創建渲染器
+renderer.setSize( window.innerWidth, window.innerHeight );                          // 設定渲染結果的大小
+document.body.appendChild( renderer.domElement );                                   // 把渲染畫布放到 <body> 裡面
+
+const width = window.innerWidth;                                                    // 視窗寬度
+const height = window.innerHeight;                                                  // 視窗高度
+const aspect = width / height;                                                      // 長寬比例
+const s = 24;                                                                       // 範圍控制係數 (值越大。顯示範圍越大)
+const left = -s * aspect;                                                           // 相機視錐體左平面
+const right = s * aspect;                                                           // 相機視錐體右平面
+const top = s;                                                                      // 相機視錐體上平面
+const bottom = -s;                                                                  // 相機視錐體下平面
+const near = 1                                                                      // 相機視錐體近平面
+const far = 1000                                                                    // 相機視錐體遠平面
+const camera = new THREE.OrthographicCamera( left, right, top, bottom, near, far ); // 創建正交相機
+camera.position.set( -2.66, 2.21, 18.1 );                                           // 
+
+const pointLight = new THREE.PointLight( 0xffffff, 100, 0 );                        // 創建點光源( 顏色, 亮度, 衰減速率 )
+pointLight.position.set( 0, 10, 12 );                                               // 設定點光源的位置
+scene.add( pointLight );                                                            // 把點光源加入倒場景中
+
+const geometry = new THREE.BoxGeometry( 16, 16, 16 );                               // 創建方形幾何體
+const materialA = new THREE.MeshStandardMaterial( { color: 0xff0000 } );            // 創建標準材質A
+const materialB = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );            // 創建標準材質B
+const cubeA = new THREE.Mesh( geometry, materialA );                                // 創建 網格體A
+const cubeB = new THREE.Mesh( geometry, materialB );                                // 創建 網格體B
+scene.add( cubeA );                                                                 // 將 網格體A 加入到場景中
+scene.add( cubeB );                                                                 // 將 網格體B 加入到場景中
+cubeA.translateX(-9);                                                               // 將 網格體A 向 x 移動 -9
+cubeB.translateX(9);                                                                // 將 網格體B 向 x 移動 9
+cubeA.rotation.set(0.1, 0.1, 0)                                                     // 將 網格體A 向右、向下旋轉，露出上面與側面
+cubeB.rotation.set(0.1, 0.1, 0)                                                     // 將 網格體B 向右、向下旋轉，露出上面與側面
+
+renderer.render( scene, camera );                                                   // 進行一次渲染
+
+</script>
+</html>

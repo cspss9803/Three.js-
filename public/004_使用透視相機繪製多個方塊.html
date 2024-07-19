@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh_TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> * { margin: 0; } </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../../node_modules/three/build/three.module.min.js",
+                "three/addons/": "../../node_modules/three/examples/jsm/"
+            }
+        }
+    </script>
+    <title>Three.js</title>
+</head>
+<body>
+</body>
+<script type="module">
+
+import * as THREE from 'three';                                          // 導入 Three.js 的核心模組
+
+const scene = new THREE.Scene();                                         // 創建場景
+
+const renderer = new THREE.WebGLRenderer();                              // 創建渲染器
+renderer.setSize( window.innerWidth, window.innerHeight );               // 設定渲染結果的大小
+document.body.appendChild( renderer.domElement );                        // 把渲染畫布放到 <body> 裡面
+
+const fov = 45;                                                          // 視角 fov( Field of View )
+const aspect = window.innerWidth / window.innerHeight;                   // 長寬比例 aspect 
+const near = 0.1;                                                        // 近裁減面的距離
+const far = 100;                                                         // 遠裁減面的距離
+const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );    // 創建透視相機
+camera.position.set( 6, 3, 3 );                                          // 設定相機的位置
+camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );                           // 設定相機看向的位置
+
+const geometry = new THREE.BoxGeometry( 1, 1, 1 );                       // 創建方形幾何體
+const materialA = new THREE.MeshStandardMaterial( { color: 0xff0000 } ); // 創建標準材質A ( 紅色, 呈現網格 )
+const materialB = new THREE.MeshStandardMaterial( { color: 0x00ff00 } ); // 創建標準材質B ( 綠色, 呈現網格 )
+const materialC = new THREE.MeshStandardMaterial( { color: 0x0000ff } ); // 創建標準材質C ( 藍色, 呈現網格 )
+const meshA = new THREE.Mesh( geometry, materialA );                     // 創建 方形網格體A
+const meshB = new THREE.Mesh( geometry, materialB );                     // 創建 方形網格體B
+const meshC = new THREE.Mesh( geometry, materialC );                     // 創建 方形網格體C
+scene.add( meshA );                                                      // 將 方形網格體A 加入到場景中
+scene.add( meshB );                                                      // 將 方形網格體B 加入到場景中
+scene.add( meshC );                                                      // 將 方形網格體C 加入到場景中
+meshA.translateX(-2);                                                    // 將 網格體A 向 x 移動 -2
+meshB.translateX(0);                                                     // 將 網格體A 向 x 移動 0
+meshC.translateX(2);                                                     // 將 網格體A 向 x 移動 2
+
+const pointLightA = new THREE.PointLight( 0xffffff, 1, 0 );              // 創建 點光源A ( 顏色, 亮度, 衰減速率 )
+const pointLightB = new THREE.PointLight( 0xffffff, 1, 0 );              // 創建 點光源B ( 顏色, 亮度, 衰減速率 )
+const pointLightC = new THREE.PointLight( 0xffffff, 1, 0 );              // 創建 點光源C ( 顏色, 亮度, 衰減速率 )
+pointLightA.position.set( -2, 1, 1 );                                    // 設定 點光源A 的位置
+pointLightB.position.set( 0, 0.8, 0.8 );                                 // 設定 點光源B 的位置
+pointLightC.position.set( 3, 0.75, 0 );                                  // 設定 點光源C 的位置
+scene.add( pointLightA );                                                // 把 點光源A 加入到場景中
+scene.add( pointLightB );                                                // 把 點光源B 加入到場景中
+scene.add( pointLightC );                                                // 把 點光源C 加入到場景中
+
+renderer.render( scene, camera );                                        // 進行一次渲染
+
+</script>
+</html>
