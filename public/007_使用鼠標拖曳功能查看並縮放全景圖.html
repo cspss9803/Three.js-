@@ -20,11 +20,9 @@
 
 import * as THREE from 'three';                                           // 導入 Three.js 的核心模組
 
-const mouse = { isPressed: false, x: 0, y: 0 }
-let lon = 0, lat = 0, tempLon = 0, tempLat = 0, phi = 0, theta = 0;
-
+const mouse = { isPressed: false, x: 0, y: 0 }                            // 鼠標資料
+let lon = 0, lat = 0, tempLon = 0, tempLat = 0, phi = 0, theta = 0;       // 經度、緯度、上次經度、上次緯度、經弧度、緯弧度
 const scene = new THREE.Scene();                                          // 創建場景
-
 const renderer = new THREE.WebGLRenderer();                               // 創建渲染器
 renderer.setSize( window.innerWidth, window.innerHeight );                // 設定渲染結果的大小
 document.body.appendChild( renderer.domElement );                         // 把渲染畫布放到 <body> 裡面
