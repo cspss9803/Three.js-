@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh_TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> * { margin: 0; } </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../../node_modules/three/build/three.module.min.js",
+                "three/addons/": "../../node_modules/three/examples/jsm/"
+            }
+        }
+    </script>
+    <title>Three.js</title>
+</head>
+<body>
+</body>
+<script type="module">
+
+import * as THREE from 'three';                                           // 導入 Three.js 的核心模組
+
+const scene = new THREE.Scene();                                          // 創建場景
+
+const renderer = new THREE.WebGLRenderer();                               // 創建渲染器
+renderer.setSize( window.innerWidth, window.innerHeight );                // 設定渲染結果的大小
+document.body.appendChild( renderer.domElement );                         // 把渲染畫布放到 <body> 裡面
+
+const fov = 45;                                                           // 視角 fov( Field of View )
+const aspect = window.innerWidth / window.innerHeight;                    // 長寬比例 aspect 
+const near = 1;                                                           // 近裁減面的距離
+const far = 5000;                                                         // 遠裁減面的距離
+const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );     // 創建透視相機
+camera.position.z = 1000;
+
+const sphereGeometry = new THREE.SphereGeometry( 100, 16, 8 );            // 創建球形幾何體
+const sphereMaterial = new THREE.MeshBasicMaterial({                      // 創建基礎材質
+    color: 0x00ff00, 
+    wireframe: true, 
+});
+const spheregeMesh = new THREE.Mesh( sphereGeometry, sphereMaterial );    // 創建網格體 (用來貼全景圖的球體)
+scene.add( spheregeMesh );                                                // 把網格體加入倒場景中
+
+const geometry = new THREE.BufferGeometry();                              // 創建 Buffer 幾何體
+const vertices = [];                                                      // 用來存放星點的容器
+for( let i = 0; i < 5000; i++ ) {                                         // 生成 5000 個星點
+    vertices.push(                                                        // 把星點座標存進容器
+        THREE.MathUtils.randFloatSpread(2000),                            // 在 2000 範圍內隨機生個 x 座標值
+        THREE.MathUtils.randFloatSpread(2000),                            // 在 2000 範圍內隨機生個 y 座標值
+        THREE.MathUtils.randFloatSpread(2000)                             // 在 2000 範圍內隨機生個 z 座標值
+    );
+}
+const verticesArray = new Float32Array(vertices);                         // 把頂點陣列轉換成 32 位元精度的浮點數陣列
+geometry.setAttribute(                                                    // 設定幾何體的屬性
+    'position',                                                           // 將屬性名稱設定成 "position"
+    new THREE.BufferAttribute( verticesArray, 3 )                         // 建立一個 Buffer屬性，使用頂點陣列，每個頂點包含 3 個值(x,y,z)
+);
+
+const pointsMaterial = new THREE.PointsMaterial({ color: 0xffffff });     // 創建星點的材質
+const points = new THREE.Points( geometry, pointsMaterial );              // 創建星點
+scene.add( points );                                                      // 把星點加入到場景中
+
+function animate() {                                                      // 持續渲染
+    requestAnimationFrame( animate );                                     // 每幀執行一次此函數
+    const r = Date.now() * 0.001;                                         // 移動速度
+    spheregeMesh.position.x = 200 * Math.cos( r );                        // 圓周移動
+    spheregeMesh.position.y = 200 * Math.sin( r );                        // 圓周移動
+    spheregeMesh.position.z = 200 * Math.sin( r );                        // 螺旋狀移動
+    renderer.render( scene, camera );                                     // 進行一次渲染
+}
+
+animate();
+
+</script>
+</html>
