@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh_TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> * { margin: 0; } </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../../node_modules/three/build/three.module.min.js",
+                "three/addons/": "../../node_modules/three/examples/jsm/"
+            }
+        }
+    </script>
+    <title>Three.js</title>
+</head>
+<body>
+</body>
+<script type="module">
+
+import * as THREE from 'three';                                           // 導入 Three.js 的核心模組
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';   // 導入軌道控制器模組
+
+const scene = new THREE.Scene();                                          // 創建場景
+const cubeTextureLoader = new THREE.CubeTextureLoader();                  // 方形紋理加載器
+cubeTextureLoader.setPath( './' );                                        // 設定圖片的路徑
+const cubeTexture = cubeTextureLoader.load([                                   // 載入方形紋理
+    'px.jpg',
+    'nx.jpg',
+    'py.jpg',
+    'ny.jpg',
+    'pz.jpg',
+    'nz.jpg'
+]);
+scene.background = cubeTexture;                                           // 設定紋理
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });            // 創建渲染器
+renderer.setPixelRatio( window.devicePixelRatio );                        // 根據設備的像素比來調整渲染的解析度，使圖像在高DPI顯示器上更清晰
+renderer.setClearColor( 0xeeeeee );                                       // 設定畫布內容被清除時，畫布背景要呈現的顏色
+renderer.setSize( window.innerWidth, window.innerHeight );                // 設定渲染結果的大小
+document.body.appendChild( renderer.domElement );                         // 把渲染畫布放到 <body> 裡面
+
+const fov = 45;                                                           // 視角 fov( Field of View )
+const aspect = window.innerWidth / window.innerHeight;                    // 長寬比例 aspect 
+const near = 1;                                                           // 近裁減面的距離
+const far = 1000;                                                         // 遠裁減面的距離
+const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );     // 創建透視相機
+camera.position.set( 10, 10, 15 );                                        // 設定相機握制
+
+const orbitControls = new OrbitControls( camera, renderer.domElement );   // 創建軌道相機
+
+const axesHelper = new THREE.AxesHelper( 50 );                            // 創建軸向輔助器
+scene.add( axesHelper );                                                  // 將軸向輔助器加入到場景
+
+const geometry = new THREE.BoxGeometry( 4, 4, 4 );                        // 創建方形幾何體
+const material = new THREE.MeshLambertMaterial({                          // 創建標準材質
+    color: 0xffffff, 
+    envMap: cubeTexture 
+});
+const mesh = new THREE.Mesh( geometry, material );                        // 創建網格體
+scene.add( mesh );                                                        // 將網格體加入到場景中
+
+const ambient = new THREE.AmbientLight( 0xffffff, 10 );
+scene.add( ambient );
+
+const pointLight = new THREE.PointLight( 0xffffff, 100 );
+scene.add( pointLight );
+pointLight.position.set(5,5,5)
+
+
+function animate() {                                                      // 持續渲染
+    requestAnimationFrame( animate );                                     // 每幀執行一次此函數
+    orbitControls.update();                                               // 更新軌道控制器
+    renderer.render( scene, camera );                                     // 進行一次渲染
+}
+
+animate();
+
+</script>
+</html>
